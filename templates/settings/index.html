@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Personal Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-cog me-2"></i>Settings</h2>
+            <p class="text-muted">Customize your experience with personalized preferences</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">General Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Currency Settings -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fas fa-dollar-sign me-2"></i>Currency Settings</h6>
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.currency_symbol.label(class="form-label") }}
+                                {{ form.currency_symbol(class="form-control") }}
+                                {% if form.currency_symbol.errors %}
+                                    <div class="text-danger small">{{ form.currency_symbol.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.currency_code.label(class="form-label") }}
+                                {{ form.currency_code(class="form-select") }}
+                                {% if form.currency_code.errors %}
+                                    <div class="text-danger small">{{ form.currency_code.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.decimal_places.label(class="form-label") }}
+                                {{ form.decimal_places(class="form-control") }}
+                                {% if form.decimal_places.errors %}
+                                    <div class="text-danger small">{{ form.decimal_places.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Theme Settings -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fas fa-palette me-2"></i>Theme Settings</h6>
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.theme.label(class="form-label") }}
+                                {{ form.theme(class="form-select") }}
+                                {% if form.theme.errors %}
+                                    <div class="text-danger small">{{ form.theme.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.primary_color.label(class="form-label") }}
+                                <div class="input-group">
+                                    {{ form.primary_color(class="form-control", type="color") }}
+                                    <span class="input-group-text">{{ form.primary_color.data or '#007bff' }}</span>
+                                </div>
+                                {% if form.primary_color.errors %}
+                                    <div class="text-danger small">{{ form.primary_color.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.secondary_color.label(class="form-label") }}
+                                <div class="input-group">
+                                    {{ form.secondary_color(class="form-control", type="color") }}
+                                    <span class="input-group-text">{{ form.secondary_color.data or '#6c757d' }}</span>
+                                </div>
+                                {% if form.secondary_color.errors %}
+                                    <div class="text-danger small">{{ form.secondary_color.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Dashboard Settings -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fas fa-chart-line me-2"></i>Dashboard Settings</h6>
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.default_date_range.label(class="form-label") }}
+                                {{ form.default_date_range(class="form-select") }}
+                                {% if form.default_date_range.errors %}
+                                    <div class="text-danger small">{{ form.default_date_range.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.chart_type.label(class="form-label") }}
+                                {{ form.chart_type(class="form-select") }}
+                                {% if form.chart_type.errors %}
+                                    <div class="text-danger small">{{ form.chart_type.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Notification Settings -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fas fa-bell me-2"></i>Notification Settings</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    {{ form.email_notifications(class="form-check-input") }}
+                                    {{ form.email_notifications.label(class="form-check-label") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    {{ form.monthly_reports(class="form-check-input") }}
+                                    {{ form.monthly_reports.label(class="form-check-label") }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Display Settings -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fas fa-desktop me-2"></i>Display Settings</h6>
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.items_per_page.label(class="form-label") }}
+                                {{ form.items_per_page(class="form-select") }}
+                                {% if form.items_per_page.errors %}
+                                    <div class="text-danger small">{{ form.items_per_page.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.date_format.label(class="form-label") }}
+                                {{ form.date_format(class="form-select") }}
+                                {% if form.date_format.errors %}
+                                    <div class="text-danger small">{{ form.date_format.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Save Settings
+                                </button>
+                                <a href="{{ url_for('settings.reset_settings') }}" class="btn btn-outline-secondary ms-2" onclick="return confirm('Are you sure you want to reset all settings to defaults?')">
+                                    <i class="fas fa-undo me-2"></i>Reset to Defaults
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Preview</h5>
+                </div>
+                <div class="card-body">
+                    <div id="settings-preview">
+                        <div class="mb-3">
+                            <h6>Currency Preview</h6>
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 id="currency-preview">{{ settings.currency_symbol }}1,234.56</h3>
+                                    <small class="text-muted">{{ settings.currency_code }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>Color Preview</h6>
+                            <div class="d-flex gap-2">
+                                <div class="flex-fill text-center p-3 rounded" id="primary-preview" style="background-color: {{ settings.primary_color }}; color: white;">
+                                    Primary
+                                </div>
+                                <div class="flex-fill text-center p-3 rounded" id="secondary-preview" style="background-color: {{ settings.secondary_color }}; color: white;">
+                                    Secondary
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>Date Preview</h6>
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <span id="date-preview">2024-01-15</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>Chart Type Preview</h6>
+                            <div class="card bg-light">
+                                <div class="card-body text-center" id="chart-preview">
+                                    <i class="fas fa-chart-pie fa-2x text-primary"></i>
+                                    <span class="ms-2">Pie Chart</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Currency symbol mapping
+const currencySymbols = {
+    'USD': '$',
+    'EUR': '€',
+    'GBP': '£',
+    'INR': '₹',
+    'JPY': '¥',
+    'CNY': '¥',
+    'CAD': 'C$',
+    'AUD': 'A$'
+};
+
+// Live preview updates
+document.addEventListener('DOMContentLoaded', function() {
+    const currencySymbol = document.getElementById('currency_symbol');
+    const currencyCode = document.getElementById('currency_code');
+    const decimalPlaces = document.getElementById('decimal_places');
+    const primaryColor = document.getElementById('primary_color');
+    const secondaryColor = document.getElementById('secondary_color');
+    const dateFormat = document.getElementById('date_format');
+    const chartType = document.getElementById('chart_type');
+    
+    function updatePreview() {
+        // Update currency preview
+        const symbol = currencySymbol.value || '₹';
+        const decimals = decimalPlaces.value || 2;
+        const amount = (1234.56).toFixed(decimals);
+        document.getElementById('currency-preview').textContent = symbol + amount.toLocaleString();
+        
+        // Update color previews
+        document.getElementById('primary-preview').style.backgroundColor = primaryColor.value || '#007bff';
+        document.getElementById('secondary-preview').style.backgroundColor = secondaryColor.value || '#6c757d';
+        
+        // Update color value displays
+        primaryColor.nextElementSibling.textContent = primaryColor.value || '#007bff';
+        secondaryColor.nextElementSibling.textContent = secondaryColor.value || '#6c757d';
+        
+        // Update date preview
+        const date = new Date('2024-01-15');
+        const format = dateFormat.value || '%Y-%m-%d';
+        let formattedDate = format.replace('%Y', '2024')
+                                .replace('%m', '01')
+                                .replace('%d', '15')
+                                .replace('%b', 'Jan')
+                                .replace('%B', 'January');
+        document.getElementById('date-preview').textContent = formattedDate;
+        
+        // Update chart type preview
+        updateChartPreview(chartType.value || 'pie');
+    }
+    
+    function updateChartPreview(type) {
+        const previewDiv = document.getElementById('chart-preview');
+        if (previewDiv) {
+            let chartHTML = '';
+            switch(type) {
+                case 'pie':
+                    chartHTML = '<i class="fas fa-chart-pie fa-2x text-primary"></i> <span class="ms-2">Pie Chart</span>';
+                    break;
+                case 'bar':
+                    chartHTML = '<i class="fas fa-chart-bar fa-2x text-success"></i> <span class="ms-2">Bar Chart</span>';
+                    break;
+                case 'doughnut':
+                    chartHTML = '<i class="fas fa-chart-pie fa-2x text-info"></i> <span class="ms-2">Doughnut Chart</span>';
+                    break;
+                default:
+                    chartHTML = '<i class="fas fa-chart-pie fa-2x text-primary"></i> <span class="ms-2">Pie Chart</span>';
+            }
+            previewDiv.innerHTML = chartHTML;
+        }
+    }
+    
+    // Auto-populate currency symbol when currency code changes
+    function updateCurrencySymbol() {
+        const code = currencyCode.value;
+        if (currencySymbols[code] && !currencySymbol.value) {
+            currencySymbol.value = currencySymbols[code];
+            updatePreview();
+        }
+    }
+    
+    // Add event listeners
+    [currencySymbol, decimalPlaces, primaryColor, secondaryColor, dateFormat, chartType].forEach(element => {
+        element.addEventListener('input', updatePreview);
+        element.addEventListener('change', updatePreview);
+    });
+    
+    currencyCode.addEventListener('change', updateCurrencySymbol);
+    
+    // Initial preview
+    updatePreview();
+    updateChartPreview(chartType.value || 'pie');
+});
+
+// Auto-populate currency symbol on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const currencyCode = document.getElementById('currency_code');
+    const currencySymbol = document.getElementById('currency_symbol');
+    
+    // Only auto-populate if symbol field is empty
+    if (currencySymbol && currencyCode && !currencySymbol.value) {
+        const code = currencyCode.value;
+        if (currencySymbols[code]) {
+            currencySymbol.value = currencySymbols[code];
+        }
+    }
+});
+</script>
+{% endblock %}

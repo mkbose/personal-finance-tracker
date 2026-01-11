@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, FloatField, DateField, SelectField, TextAreaField, SubmitField
+from wtforms import StringField, FloatField, DateField, SelectField, TextAreaField, SubmitField, FileField
 from wtforms.validators import DataRequired, NumberRange, Length
 from datetime import date
 
@@ -11,3 +11,7 @@ class ExpenseForm(FlaskForm):
     subcategory_id = SelectField('Subcategory', coerce=int, default=0)
     notes = TextAreaField('Notes')
     submit = SubmitField('Save Expense')
+
+class ImportForm(FlaskForm):
+    file = FileField('CSV/Excel File', validators=[DataRequired()])
+    submit = SubmitField('Import Expenses')

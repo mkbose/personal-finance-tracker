@@ -52,3 +52,38 @@ class Expense(db.Model):
     notes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class UserSettings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    # Currency settings
+    currency_symbol = db.Column(db.String(10), default='₹')
+    currency_code = db.Column(db.String(3), default='INR')
+    decimal_places = db.Column(db.Integer, default=2)
+    
+    # Theme settings
+    theme = db.Column(db.String(20), default='light')  # light, dark, auto
+    primary_color = db.Column(db.String(7), default='#007bff')
+    secondary_color = db.Column(db.String(7), default='#6c757d')
+    
+    # Dashboard settings
+    default_date_range = db.Column(db.String(20), default='all_time')  # all_time, last_30_days, last_month
+    chart_type = db.Column(db.String(20), default='pie')  # pie, bar, doughnut
+    
+    # Notification settings
+    email_notifications = db.Column(db.Boolean, default=True)
+    monthly_reports = db.Column(db.Boolean, default=True)
+    
+    # Display settings
+    items_per_page = db.Column(db.Integer, default=10)
+    date_format = db.Column(db.String(20), default='%Y-%m-%d')
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationship
+    user = db.relationship('User', backref=db.backref('settings', lazy=True, uselist=False))
+    
+    def __repr__(self):
+        return f'<UserSettings {self.user_id}>'

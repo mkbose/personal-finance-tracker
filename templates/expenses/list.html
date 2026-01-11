@@ -63,13 +63,13 @@
                         </div>
                         
                         <div class="col-md-2">
-                            <label for="amount_min" class="form-label">Min Amount ($)</label>
+                            <label for="amount_min" class="form-label">Min Amount ({{ settings.currency_symbol }})</label>
                             <input type="number" name="amount_min" id="amount_min" class="form-control" 
                                    step="0.01" min="0" value="{{ amount_min or '' }}" placeholder="0.00">
                         </div>
                         
                         <div class="col-md-2">
-                            <label for="amount_max" class="form-label">Max Amount ($)</label>
+                            <label for="amount_max" class="form-label">Max Amount ({{ settings.currency_symbol }})</label>
                             <input type="number" name="amount_max" id="amount_max" class="form-control" 
                                    step="0.01" min="0" value="{{ amount_max or '' }}" placeholder="999.99">
                         </div>
@@ -118,10 +118,10 @@
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="applyQuickFilter('year')">This Year</button>
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="applyQuickFilter('last7')">Last 7 Days</button>
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="applyQuickFilter('last30')">Last 30 Days</button>
-                                <button type="button" class="btn btn-sm btn-outline-success" onclick="applyAmountFilter('0-10')">$0-$10</button>
-                                <button type="button" class="btn btn-sm btn-outline-success" onclick="applyAmountFilter('10-50')">$10-$50</button>
-                                <button type="button" class="btn btn-sm btn-outline-success" onclick="applyAmountFilter('50-100')">$50-$100</button>
-                                <button type="button" class="btn btn-sm btn-outline-success" onclick="applyAmountFilter('100+')">$100+</button>
+                                <button type="button" class="btn btn-sm btn-outline-success" onclick="applyAmountFilter('0-10')">{{ settings.currency_symbol }}0-{{ settings.currency_symbol }}10</button>
+                                <button type="button" class="btn btn-sm btn-outline-success" onclick="applyAmountFilter('10-50')">{{ settings.currency_symbol }}10-{{ settings.currency_symbol }}50</button>
+                                <button type="button" class="btn btn-sm btn-outline-success" onclick="applyAmountFilter('50-100')">{{ settings.currency_symbol }}50-{{ settings.currency_symbol }}100</button>
+                                <button type="button" class="btn btn-sm btn-outline-success" onclick="applyAmountFilter('100+')">{{ settings.currency_symbol }}100+</button>
                             </div>
                         </div>
                     </div>
@@ -161,7 +161,7 @@
                                     <br><small class="text-muted">{{ expense.subcategory_obj.name }}</small>
                                 {% endif %}
                             </td>
-                            <td><strong>${{ "%.2f"|format(expense.amount) }}</strong></td>
+                            <td><strong>{{ settings.currency_symbol }}{{ "%.2f"|format(expense.amount) }}</strong></td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
                                     <a href="{{ url_for('expenses.edit_expense', id=expense.id) }}" class="btn btn-outline-primary">

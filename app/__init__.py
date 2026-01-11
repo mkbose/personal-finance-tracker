@@ -28,12 +28,14 @@ def create_app():
     from app.routes.expenses import expenses_bp
     from app.routes.categories import categories_bp
     from app.routes.api import api_bp
+    from app.routes.settings import settings_bp
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(main_bp)
     app.register_blueprint(expenses_bp, url_prefix='/expenses')
     app.register_blueprint(categories_bp, url_prefix='/categories')
     app.register_blueprint(api_bp, url_prefix='/api')
+    app.register_blueprint(settings_bp, url_prefix='/settings')
     
     with app.app_context():
         from app.models import User, Expense, Category, Subcategory

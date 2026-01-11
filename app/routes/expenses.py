@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from app import db
-from app.models import Expense, Category, Subcategory
+from app.models import Expense, Category, Subcategory, UserSettings
 from app.forms.expenses import ExpenseForm
 from datetime import datetime
 import csv
@@ -67,6 +67,13 @@ def list_expenses():
     if category_id:
         subcategories = Subcategory.query.filter_by(category_id=category_id).order_by(Subcategory.name).all()
     
+    # Get user settings for currency
+    user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+    if not user_settings:
+        user_settings = UserSettings(user_id=current_user.id)
+        db.session.add(user_settings)
+        db.session.commit()
+    
     return render_template('expenses/list.html', 
                          expenses=expenses, 
                          categories=categories,
@@ -77,7 +84,8 @@ def list_expenses():
                          date_from=date_from,
                          date_to=date_to,
                          description_search=description_search,
-                         subcategories=subcategories)
+                         subcategories=subcategories,
+                         settings=user_settings)
 
 @expenses_bp.route('/add', methods=['GET', 'POST'])
 @login_required
@@ -104,7 +112,14 @@ def add_expense():
         flash('Expense added successfully!')
         return redirect(url_for('expenses.list_expenses'))
     
-    return render_template('expenses/add.html', form=form)
+    # Get user settings for currency
+    user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+    if not user_settings:
+        user_settings = UserSettings(user_id=current_user.id)
+        db.session.add(user_settings)
+        db.session.commit()
+    
+    return render_template('expenses/add.html', form=form, settings=user_settings)
 
 @expenses_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -129,7 +144,14 @@ def edit_expense(id):
         flash('Expense updated successfully!')
         return redirect(url_for('expenses.list_expenses'))
     
-    return render_template('expenses/edit.html', form=form, expense=expense)
+    # Get user settings for currency
+    user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+    if not user_settings:
+        user_settings = UserSettings(user_id=current_user.id)
+        db.session.add(user_settings)
+        db.session.commit()
+    
+    return render_template('expenses/edit.html', form=form, expense=expense, settings=user_settings)
 
 @expenses_bp.route('/delete/<int:id>')
 @login_required

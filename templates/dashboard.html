@@ -305,6 +305,41 @@ function populateCategoryTable(categoryData) {
     });
 }
 
+// Toggle functions for category breakdown
+function showChartView() {
+    document.getElementById('category-chart-view').style.display = 'block';
+    document.getElementById('category-table-view').style.display = 'none';
+    document.getElementById('chart-view-btn').classList.add('active');
+    document.getElementById('table-view-btn').classList.remove('active');
+}
+
+function showTableView() {
+    document.getElementById('category-chart-view').style.display = 'none';
+    document.getElementById('category-table-view').style.display = 'block';
+    document.getElementById('chart-view-btn').classList.remove('active');
+    document.getElementById('table-view-btn').classList.add('active');
+}
+
+// Populate category table
+function populateCategoryTable(categoryData) {
+    const tbody = document.getElementById('category-table-body');
+    tbody.innerHTML = '';
+    
+    const total = categoryData.reduce((sum, cat) => sum + cat.total, 0);
+    
+    categoryData.forEach(function(category) {
+        const percentage = ((category.total / total) * 100).toFixed(1);
+        const row = `
+            <tr>
+                <td>${category.name}</td>
+                <td class="text-end">${formatINR(category.total)}</td>
+                <td class="text-end">${percentage}%</td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
 // Debug: Log data to console
 console.log('Category breakdown:', {{ category_breakdown | tojson | safe }});
 console.log('Monthly total:', {{ monthly_total }});
@@ -314,10 +349,12 @@ console.log('Total expenses:', {{ total_expenses }});
 // Initialize custom range with all-time total
 calculateCustomRange();
 
-// Category breakdown data
+// Category breakdown chart
 const categoryData = {{ category_breakdown | tojson | safe }};
+const userChartType = '{{ settings.chart_type | default("pie") }}';
 console.log('Parsed categoryData:', categoryData);
 console.log('CategoryData length:', categoryData ? categoryData.length : 'null');
+console.log('User chart type:', userChartType);
 
 if (categoryData && categoryData.length > 0) {
     console.log('Rendering category chart...');
@@ -336,7 +373,7 @@ if (categoryData && categoryData.length > 0) {
     var categoryTrace = {
         values: categoryValues,
         labels: categoryLabels,
-        type: 'pie',
+        type: userChartType === 'doughnut' ? 'pie' : userChartType, // Use 'pie' type for doughnut
         marker: {
             colors: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0']
         },
@@ -345,6 +382,12 @@ if (categoryData && categoryData.length > 0) {
         hovertemplate: '<b>%{label}</b><br>Amount: %{value}<br>Percentage: %{percent}<extra></extra>'
     };
 
+    // Add hole property for doughnut chart
+    if (userChartType === 'doughnut') {
+        categoryTrace.hole = 0.4; // Create the hole in the center
+    }
+
+    // Adjust layout based on chart type
     var categoryLayout = {
         margin: { t: 20, b: 20, l: 20, r: 20 },
         showlegend: true,
@@ -355,11 +398,43 @@ if (categoryData && categoryData.length > 0) {
         }
     };
 
+    // Special layout for bar chart
+    if (userChartType === 'bar') {
+        categoryTrace = {
+            x: categoryLabels,
+            y: categoryValues,
+            type: 'bar',
+            marker: {
+                color: categoryValues.map((_, i) => ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'][i % 6])
+            },
+            hovertemplate: '<b>%{x}</b><br>Amount: %{y}<extra></extra>'
+        };
+        
+        categoryLayout = {
+            margin: { t: 20, b: 60, l: 60, r: 20 },
+            xaxis: { 
+                title: 'Category',
+                tickangle: -45  // Angle labels to prevent overlap
+            },
+            yaxis: { 
+                title: 'Amount (₹)', 
+                tickformat: ',.2f',
+                tickprefix: '₹'
+            },
+            showlegend: false
+        };
+    }
+
     Plotly.newPlot('categoryChart', [categoryTrace], categoryLayout);
 } else {
     console.log('No category data available');
     // Show no data message
-    document.getElementById('categoryChart').innerHTML = '<div class="text-center text-muted py-5">No expense data available. Add some expenses to see breakdown.</div>';
+    document.getElementById('categoryChart').innerHTML = '<div class="text-center text-muted py-5">No expense data available. Add some expenses to see the breakdown.</div>';
+    // Also clear table
+    const tbody = document.getElementById('category-table-body');
+    if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No expense data available. Add some expenses to see the breakdown.</td></tr>';
+    }
 }
 
 // Monthly trend chart

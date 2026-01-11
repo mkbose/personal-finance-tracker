@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
 from app import db
-from app.models import Expense, Category, Subcategory
+from app.models import Expense, Category, Subcategory, UserSettings
 from sqlalchemy import func, extract
 from datetime import datetime, timedelta
 import calendar
@@ -18,6 +18,21 @@ def index():
 @login_required
 def dashboard():
     print(f"DEBUG: Dashboard route accessed by user {current_user.id}")
+    
+    # Get user settings
+    user_settings = UserSettings.query.filter_by(user_id=current_user.id).first()
+    if not user_settings:
+        user_settings = UserSettings(
+            user_id=current_user.id,
+            currency_symbol='₹',
+            currency_code='INR',
+            theme='light',
+            primary_color='#007bff',
+            secondary_color='#6c757d',
+            chart_type='pie'
+        )
+        db.session.add(user_settings)
+        db.session.commit()
     
     # Get all-time data instead of current month
     monthly_total = db.session.query(func.sum(Expense.amount)).filter_by(user_id=current_user.id).scalar() or 0
@@ -47,13 +62,15 @@ def dashboard():
     print(f"DEBUG: All-time monthly total: {monthly_total}")
     print(f"DEBUG: Recent total: {recent_total}")
     print(f"DEBUG: Category breakdown items: {len(category_breakdown)}")
+    print(f"DEBUG: User chart type: {user_settings.chart_type}")
     
     return render_template('dashboard.html',
                          monthly_total=monthly_total,
                          recent_total=recent_total,
                          category_breakdown=category_breakdown,
                          recent_expenses=recent_expenses,
-                         total_expenses=total_expenses)
+                         total_expenses=total_expenses,
+                         settings=user_settings)
 
 @main_bp.route('/create-sample-data')
 @login_required
