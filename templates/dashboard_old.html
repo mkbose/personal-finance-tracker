@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Personal Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Stats Cards Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">All-Time Total</h6>
+                            <h3>₹{{ "{:,.2f}".format(monthly_total) }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-chart-bar fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Last 30 Days</h6>
+                            <h3>₹{{ "{:,.2f}".format(recent_total) }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Expenses</h6>
+                            <h3>{{ total_expenses }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-receipt fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Custom Range Total</h6>
+                            <h3 id="custom-range-total">₹0.00</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-alt fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Expense Breakdown by Category
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="categoryChart" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Monthly Trend
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="trendChart" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Date Range and Recent Expenses Row -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>Custom Date Range
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="custom-range-form">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="date_from" class="form-label">From Date</label>
+                                <input type="date" id="date_from" name="date_from" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="date_to" class="form-label">To Date</label>
+                                <input type="date" id="date_to" name="date_to" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-primary w-100" onclick="calculateCustomRange()">
+                                    <i class="fas fa-calculator me-1"></i>Calculate Total
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary w-100 mt-2" onclick="clearCustomRange()">
+                                    <i class="fas fa-times me-1"></i>Clear Range
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Recent Expenses
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_expenses %}
+                        <div class="list-group list-group-flush">
+                            {% for expense in recent_expenses %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">{{ expense.description }}</h6>
+                                            <small class="text-muted">{{ expense.category_obj.name }}</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <strong>₹{{ "{:,.2f}".format(expense.amount) }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ expense.date.strftime('%m/%d') }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="mt-3">
+                            <a href="{{ url_for('expenses.list_expenses') }}" class="btn btn-sm btn-outline-primary w-100">
+                                View All Expenses
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                            <h5>No expenses found</h5>
+                            <p class="text-muted">Start tracking your expenses by adding your first expense.</p>
+                            <a href="{{ url_for('expenses.add_expense') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>Add Your First Expense
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Simple INR formatting function with commas
+function formatINR(amount) {
+    return '₹' + amount.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+// Custom date range functions
+function calculateCustomRange() {
+    const dateFrom = document.getElementById('date_from').value;
+    const dateTo = document.getElementById('date_to').value;
+    
+    if (!dateFrom && !dateTo) {
+        // No dates selected, show all-time total
+        fetch('/api/expenses/custom-range')
+            .then(function(response) {
+                console.log('Custom range (all-time) response status:', response.status);
+                return response.json();
+            })
+            .then(function(data) {
+                console.log('Custom range (all-time) data:', data);
+                document.getElementById('custom-range-total').textContent = formatINR(data.total);
+            })
+            .catch(function(error) {
+                console.error('Error fetching all-time total:', error);
+            });
+        return;
+    }
+    
+    if (!dateFrom || !dateTo) {
+        alert('Please select both From and To dates');
+        return;
+    }
+    
+    // Fetch custom range total from API
+    fetch(`/api/expenses/custom-range?date_from=${dateFrom}&date_to=${dateTo}`)
+        .then(function(response) {
+            console.log('Custom range response status:', response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            console.log('Custom range data:', data);
+            document.getElementById('custom-range-total').textContent = formatINR(data.total);
+        })
+        .catch(function(error) {
+            console.error('Error fetching custom range data:', error);
+            alert('Error calculating custom range total');
+        });
+}
+
+function clearCustomRange() {
+    document.getElementById('date_from').value = '';
+    document.getElementById('date_to').value = '';
+    // Reset to all-time total
+    calculateCustomRange();
+}
+
+// Debug: Log data to console
+console.log('Category breakdown:', {{ category_breakdown | tojson | safe }});
+console.log('Monthly total:', {{ monthly_total }});
+console.log('Recent total:', {{ recent_total }});
+console.log('Total expenses:', {{ total_expenses }});
+
+// Initialize custom range with all-time total
+calculateCustomRange();
+
+// Category breakdown chart
+const categoryData = {{ category_breakdown | tojson | safe }};
+console.log('Parsed categoryData:', categoryData);
+console.log('CategoryData length:', categoryData ? categoryData.length : 'null');
+
+if (categoryData && categoryData.length > 0) {
+    console.log('Rendering category chart...');
+    var categoryValues = [];
+    var categoryLabels = [];
+    for (var i = 0; i < categoryData.length; i++) {
+        categoryValues.push(categoryData[i].total);
+        categoryLabels.push(categoryData[i].name);
+    }
+    console.log('Category values:', categoryValues);
+    console.log('Category labels:', categoryLabels);
+
+    var categoryTrace = {
+        values: categoryValues,
+        labels: categoryLabels,
+        type: 'pie',
+        marker: {
+            colors: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
+        }
+    };
+
+    var categoryLayout = {
+        margin: { t: 0, b: 0, l: 0, r: 0 }
+    };
+
+    Plotly.newPlot('categoryChart', [categoryTrace], categoryLayout);
+} else {
+    console.log('No category data available');
+    // Show no data message
+    document.getElementById('categoryChart').innerHTML = '<div class="text-center text-muted py-5">No expense data available. Add some expenses to see the breakdown.</div>';
+}
+
+// Monthly trend chart
+console.log('Fetching monthly trend data...');
+fetch('/api/expenses/monthly-trend')
+    .then(function(response) {
+        console.log('Trend response status:', response.status);
+        return response.json();
+    })
+    .then(function(data) {
+        console.log('Trend data received:', data);
+        var trendTrace = {
+            x: data.map(function(d) { return d.month; }),
+            y: data.map(function(d) { return d.total; }),
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#007bff' }
+        };
+
+        var trendLayout = {
+            margin: { t: 20, b: 40, l: 60, r: 20 },
+            xaxis: { title: 'Month' },
+            yaxis: { 
+                title: 'Amount (₹)',
+                tickformat: '₹,.2f'
+            }
+        };
+
+        console.log('Rendering trend chart...');
+        Plotly.newPlot('trendChart', [trendTrace], trendLayout);
+    })
+    .catch(function(error) {
+        console.error('Error fetching trend data:', error);
+    });
+</script>
+{% endblock %}

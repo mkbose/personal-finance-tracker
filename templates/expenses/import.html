@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Import Expenses - Personal Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-upload me-2"></i>Import Expenses
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() if form else '' }}
+                    
+                    <div class="mb-4">
+                        <h5>Instructions</h5>
+                        <p class="text-muted">
+                            Upload a CSV or Excel file with the following columns:
+                        </p>
+                        <ul class="text-muted">
+                            <li><strong>description</strong> - Expense description (required)</li>
+                            <li><strong>amount</strong> - Expense amount (required)</li>
+                            <li><strong>date</strong> - Date in YYYY-MM-DD format (required)</li>
+                            <li><strong>category</strong> - Category name (required)</li>
+                            <li><strong>subcategory</strong> - Subcategory name (optional)</li>
+                            <li><strong>notes</strong> - Additional notes (optional)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Choose File</label>
+                        <input type="file" class="form-control" id="file" name="file" 
+                               accept=".csv,.xlsx,.xls" required>
+                        <div class="form-text">
+                            Supported formats: CSV, Excel (.xlsx, .xls)
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('expenses.list_expenses') }}" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-upload me-1"></i>Import Expenses
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Example CSV Format
+                </h5>
+            </div>
+            <div class="card-body">
+                <pre class="bg-light p-3 rounded">description,amount,date,category,subcategory,notes
+Coffee shop,4.50,2024-01-15,Food & Drink,Morning coffee,Daily coffee
+Gas station,45.00,2024-01-14,Transportation,,Full tank
+Netflix subscription,15.99,2024-01-10,Entertainment,,Monthly fee</pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

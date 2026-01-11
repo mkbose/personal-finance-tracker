@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Categories - Personal Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>
+            <i class="fas fa-tags me-2"></i>Categories
+        </h2>
+    </div>
+    <div class="col-auto">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('categories.add_category') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Add Category
+            </a>
+            {% if categories|length > 1 %}
+            <a href="{{ url_for('categories.merge_categories') }}" class="btn btn-warning">
+                <i class="fas fa-code-branch me-1"></i>Merge Categories
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if categories %}
+    <div class="row g-4">
+        {% for category in categories %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">{{ category.name }}</h5>
+                    <div class="btn-group btn-group-sm">
+                        <a href="{{ url_for('categories.edit_category', id=category.id) }}" 
+                           class="btn btn-outline-primary">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{{ url_for('categories.delete_category', id=category.id) }}" 
+                           class="btn btn-outline-danger"
+                           onclick="return confirm('Are you sure you want to delete this category?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if category.description %}
+                        <p class="card-text text-muted">{{ category.description }}</p>
+                    {% endif %}
+                    
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <small class="text-muted d-block">Subcategories</small>
+                            <strong>{{ category.subcategories|length }}</strong>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">Expenses</small>
+                            <strong>{{ category.expenses|length }}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('categories.list_subcategories', category_id=category.id) }}" 
+                       class="btn btn-sm btn-outline-primary w-100">
+                        <i class="fas fa-list me-1"></i>Manage Subcategories
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+        <h4>No categories found</h4>
+        <p class="text-muted">Create your first category to start organizing your expenses.</p>
+        <a href="{{ url_for('categories.add_category') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>Add Your First Category
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

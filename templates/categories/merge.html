@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Merge Categories{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>
+                <i class="fas fa-code-branch me-2"></i>Merge Categories
+            </h2>
+            <p class="text-muted">Merge one category into another. All expenses and subcategories will be moved from the source to the target category.</p>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ url_for('categories.list_categories') }}" class="btn btn-outline-secondary float-end">
+                <i class="fas fa-arrow-left me-1"></i>Back to Categories
+            </a>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Merge Categories</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="source_category" class="form-label">Source Category (to be merged)</label>
+                            <select name="source_category" id="source_category" class="form-select" required>
+                                <option value="">Select source category...</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">This category will be deleted after merging.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="target_category" class="form-label">Target Category (merge into)</label>
+                            <select name="target_category" id="target_category" class="form-select" required>
+                                <option value="">Select target category...</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">All data will be moved to this category.</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('categories.list_categories') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-code-branch me-1"></i>Merge Categories
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>What happens when merging?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            All expenses from source category move to target category
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            All subcategories from source category move to target category
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Source category is permanently deleted
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Target category remains unchanged
+                        </li>
+                    </ul>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone. Make sure you have selected the correct categories before proceeding.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
